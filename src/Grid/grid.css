@@ -1,0 +1,27 @@
+* {
+    font-size: 16px;
+    font-family: Roboto, sans-serif;
+}
+
+.grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e3e3e3;
+}
+
+.grid-content {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow: auto;
+    height: 500px;
+}
+
+.grid-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 1rem;
+    width: 100%;
+}
