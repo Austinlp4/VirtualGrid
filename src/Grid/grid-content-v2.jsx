@@ -1,121 +1,75 @@
-import { 
-    useState, 
-    useRef,
-    useCallback,
-    useEffect,
-} from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { FixedSizeList as List } from 'react-window';
 import { GridRow } from './grid-row';
-
-const buffer = 2;
 
 export const GridContent = ({ 
     data, 
     columnMapping,
     customComponents,
-    renderedRange = 10,
     selectable,
     selectedRows,
     handleSelect,
     rowHeight
 }) => {
-    const [scrollTop, setScrollTop] = useState(0);
-    const [containerHeight, setContainerHeight] = useState(0);
     const containerRef = useRef(null);
-    const totalHeight = data.length * rowHeight;
-
-    const totalRows = Math.ceil(containerHeight / rowHeight);
-
-    const handleScroll = useCallback(() => {
-        if (containerRef.current) {
-            setScrollTop(containerRef.current.scrollTop)
-        }
-    }, [])
+    const [containerHeight, setContainerHeight] = useState(500); // Default height
 
     useEffect(() => {
-        const container = containerRef.current;
+        const updateHeight = () => {
+            if (containerRef.current) {
+                console.log('Container height: ', containerRef.current.clientHeight);
+                // get parent of container
+                const parent = containerRef.current.parentElement.parentElement;
+                console.log('Parent height: ', parent.offsetHeight);
 
-        setContainerHeight(container.clientHeight);
-
-        if (container) {
-            container.addEventListener('scroll', handleScroll);
-        }
-        return () => {
-            if (container) {
-                container.removeEventListener('scroll', handleScroll);
+                setContainerHeight(parent.clientHeight - 50); // Subtract header height
             }
-        }
-    }, [
-        handleScroll,
-        containerRef
-    ])
+        };
 
-    const startIndex = Math.max(
-        0, 
-        Math.floor(
-            scrollTop / rowHeight
-        ) - buffer
-    );
+        updateHeight(); // Set initial height
+        window.addEventListener('resize', updateHeight);
 
-    const endIndex = Math.min(
-        data.length, 
-        Math.ceil(
-            (scrollTop + containerHeight) / rowHeight
-        ) + buffer
-    );
+        return () => {
+            window.removeEventListener('resize', updateHeight);
+        };
+    }, []);
 
     const Row = customComponents && customComponents['grid-row']['component'] || GridRow;
     const rowProps = customComponents && customComponents['grid-row']['props'] || {};
-    const MergedRowComponent = (props) => (
-        <Row 
-            {...rowProps}
-            {...props}
-            columnMapping={columnMapping} 
-            customCell={customComponents && customComponents['grid-cell'] || null}
-            selectable={selectable}
-            selectedRows={selectedRows}
-            handleSelect={handleSelect}
-            rowHeight={rowHeight}
-            data={data}
-        />
-    );
 
-    const items = [];
-    for (let i = startIndex; i < endIndex; i++) {
-        items.push(
-            <MergedRowComponent 
-                key={i}
-                row={i}
+    const renderRow = ({ index, style }) => { console.log('Rendering row', index); return (
+        <div style={style} key={index}>
+            <Row 
+                {...rowProps}
+                row={index}
+                columnMapping={columnMapping} 
+                customCell={customComponents && customComponents['grid-cell'] || null}
+                selectable={selectable}
+                selectedRows={selectedRows}
+                handleSelect={handleSelect}
+                rowHeight={rowHeight}
+                data={data[index]}
             />
-        )
-    }
-
-    console.log('items: ', items);
-
-    console.log('rowHeight: ', rowHeight);
-    return (
-        <div 
-            ref={containerRef}
-            style={{
-                ...styles.container
-            }}
-        >
-            <div 
-                style={{
-                    ...styles.innerContainer 
-                }}
-            >
-                {items}
-            </div>
         </div>
-    )
+    ); };
+
+    return (
+        <div ref={containerRef} style={styles.container}>
+            <List
+                height={containerHeight}
+                itemCount={data.length}
+                itemSize={rowHeight}
+                width="100%"
+            >
+                {renderRow}
+            </List>
+        </div>
+    );
 }
 
 const styles = {
     container: {
-        height: '500px',
+        height: '100%',
         overflowY: 'auto'
-    },
-    innerContainer: {
-
     }
 }

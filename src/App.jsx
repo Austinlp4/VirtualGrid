@@ -12,8 +12,9 @@ function App() {
   return (
     <div style={
       {
-        maxWidth: "1100px",
-        margin: "20px auto"
+        maxWidth: "90%",
+        margin: "20px auto",
+        height: "800px",
       }
     }>
       <Grid 
@@ -30,6 +31,7 @@ function App() {
           }
         }}
       >
+        <Grid.Pagination itemsPerPage={10}/>
         <Grid.Header 
           sortable={{
             name: {
@@ -43,6 +45,7 @@ function App() {
           }}
         />
         <Grid.Content rowHeight={80}/>
+        <Grid.Pagination itemsPerPage={10}/>
       </Grid>
     </div>
   )
