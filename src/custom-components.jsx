@@ -11,14 +11,15 @@ export const NewGridRow = ({
   handleSelect,
   rowHeight
 }) => {
-    console.log('data from row: ', data[row])
+    console.log('data from row: ', row, data)
     console.log('selectable: ', selectable);
     return (
       <div className="grid-row" style={{
-        height: `${rowHeight}px`
+        height: `${rowHeight}px`,
+        backgroundColor: row % 2 === 0 ? '#f9f9f9' : 'white'
       }}>
         {selectable && (
-          <div style={{ width: "50px", padding: "0 .25rem" }}>
+          <div style={{ width: "50px", padding: "0 .5rem" }}>
             <Checkbox 
               onChange={() => handleSelect(row)}
               checked={selectedRows === 'all' || selectedRows.includes(row)}
@@ -33,7 +34,7 @@ export const NewGridRow = ({
               {...cellProps}
               {...props}
               column={column}
-              cell={data[row][column.key]}
+              cell={data[column.key]}
               columnMapping={columnMapping}
             />
           );
@@ -52,7 +53,8 @@ export const NewGridCell = ({ newProp, cell, column, columnMapping }) => {
     console.log('cell: ', cell, columnMapping, column);
     return (
       <div className="grid-cell" style={{
-        width: column.width,
+        padding: '0 .5rem',
+        width: column.width
       }}>
         {cell}
       </div>
