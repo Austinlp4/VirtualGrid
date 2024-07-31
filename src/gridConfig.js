@@ -1,17 +1,22 @@
 export const columnMapping = [
     { 
-      key: "name", 
+      key: "masterUniqueId", 
+      label: "Product Identifier",
+      width: "150px"
+    },
+    {
+      key: "version",
+      label: "Version",
+      width: "120px"
+    },
+    {
+      key: "product_name",
       label: "Name",
-      width: "200px"
+      width: "250px"
     },
-    { 
-      key: "age", 
-      label: "Age",
-      width: "100px"
-    },
-    { 
-      key: "email", 
-      label: "Email",
-      width: "300px"
-    },
+    {
+      key: "uniqueId",
+      label: "UniqueId",
+      width: "130px"
+    }
 ];

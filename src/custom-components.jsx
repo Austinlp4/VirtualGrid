@@ -52,7 +52,7 @@ export const NewGridCell = ({ newProp, cell, column, columnMapping }) => {
     console.log('cell: ', cell, columnMapping, column);
     return (
       <div className="grid-cell" style={{
-        width: column.width
+        width: column.width,
       }}>
         {cell}
       </div>

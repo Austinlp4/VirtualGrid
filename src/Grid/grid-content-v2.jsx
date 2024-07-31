@@ -89,9 +89,6 @@ export const GridContent = ({
         )
     }
 
-    console.log('items: ', items);
-
-    console.log('rowHeight: ', rowHeight);
     return (
         <div 
             ref={containerRef}

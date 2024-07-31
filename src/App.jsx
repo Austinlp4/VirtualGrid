@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Grid from "./Grid"
 import { tableData } from "./tableData"
 import { columnMapping } from "./gridConfig"
 import {
   NewGridRow
 } from "./custom-components"
+import products from '../products.json';
 
 function App() {
-  let [data, setData] = useState(tableData)
+  let [data, setData] = useState([])
+
+  useEffect(() => {
+    setData(products)
+    console.log('products', products)
+  }, []);
 
   return (
     <div style={
