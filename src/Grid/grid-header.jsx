@@ -1,53 +1,77 @@
-import { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
 import Checkbox from '@mui/material/Checkbox';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
-export const GridHeader = ({ 
-    columnMapping, 
-    sortable, 
-    setData, 
+export const GridHeader = ({
+    columnMapping,
+    sortable,
+    setData,
     data,
     selectable,
     selectedRows,
-    handleSelect
+    handleSelect,
+    setColMap,
 }) => {
+    const [draggedColumn, setDraggedColumn] = useState(null);
+
+    const handleDragStart = (index) => {
+        setDraggedColumn(index);
+    };
+
+    const handleDragOver = (index) => {
+        if (draggedColumn === index) return;
+        const newColMap = [...columnMapping];
+        const [draggedCol] = newColMap.splice(draggedColumn, 1);
+        newColMap.splice(index, 0, draggedCol);
+        setColMap(newColMap);
+        setDraggedColumn(index);
+    };
+
+    const handleDrop = () => {
+        setDraggedColumn(null);
+    };
+
     return (
         <div className="grid-header" style={styles().headerRow}>
             {selectable && (
-                <div style={{ width: '50px', padding: '0 .25rem' , ...styles(false).headerColumn }}>
-                    <Checkbox 
+                <div style={{ width: '50px', padding: '0 .25rem', ...styles(false).headerColumn }}>
+                    <Checkbox
                         onChange={() => handleSelect('all')}
                         checked={selectedRows === 'all'}
                     />
                 </div>
             )}
-            {columnMapping.map((column, index) => 
+            {columnMapping.map((column, index) => (
                 <HeaderColumn
+                    key={column.key}
                     index={index}
                     column={column}
                     sortable={sortable}
                     setData={setData}
                     data={data}
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={() => handleDragOver(index)}
+                    onDrop={handleDrop}
                 />
-        )}
+            ))}
         </div>
     );
-}
+};
 
-const HeaderColumn = ({ 
-    column, 
-    sortable, 
-    index, 
+const HeaderColumn = ({
+    column,
+    sortable,
+    index,
     setData,
     data,
+    onDragStart,
+    onDragOver,
+    onDrop,
 }) => {
-    console.log({ column, sortable });
     const lastSort = useRef(null);
 
     const handleSort = (key, sortFn) => {
-        console.log('setData: ', setData);
         if (!sortFn) {
             console.error('No sort function provided for column: ', key);
             return;
@@ -59,52 +83,46 @@ const HeaderColumn = ({
         }
 
         const dataCopy = [...data];
-        let newData = dataCopy.sort((a, b) => sortFn(
-            lastSort.current !== key ? a[key] : b[key], 
-            lastSort.current !== key ? b[key] : a[key]
-        ));
+        let newData = dataCopy.sort((a, b) =>
+            sortFn(lastSort.current !== key ? a[key] : b[key], lastSort.current !== key ? b[key] : a[key])
+        );
 
         lastSort.current = lastSort.current !== key ? key : null;
 
         setData(newData);
-    }
+    };
 
     return (
         <div
             key={column.index}
-            style={{ 
-                width: column.width, 
-                ...styles(true).headerColumn
+            style={{
+                width: column.width,
+                ...styles(true).headerColumn,
+                cursor: 'move'
             }}
+            draggable
+            onDragStart={onDragStart}
+            onDragOver={(e) => {
+                e.preventDefault();
+                onDragOver();
+            }}
+            onDrop={onDrop}
         >
             {column.label}
             {sortable && sortable[column.key] && (
-                <div 
+                <div
                     style={styles().iconGroup}
-                    onClick={
-                        () => handleSort(
-                            column.key,
-                            sortable[column.key]?.sortFn
-                        )
+                    onClick={() =>
+                        handleSort(column.key, sortable[column.key]?.sortFn)
                     }
                 >
-                    <ArrowDropUp
-                        fontSize="small"
-                        column={column}
-                        sortable={sortable}
-                        style={styles().iconUp}
-                    />
-                    <ArrowDropDown
-                        fontSize="small"
-                        column={column}
-                        sortable={sortable}
-                        style={styles().iconDown}
-                    />
+                    <ArrowDropUp fontSize="small" column={column} sortable={sortable} style={styles().iconUp} />
+                    <ArrowDropDown fontSize="small" column={column} sortable={sortable} style={styles().iconDown} />
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
 GridHeader.propTypes = {
     columnMapping: PropTypes.array,
@@ -112,9 +130,15 @@ GridHeader.propTypes = {
         [PropTypes.string]: PropTypes.shape({
             label: PropTypes.string.isRequired,
             sortFn: PropTypes.func,
-        })
+        }),
     }),
-}
+    setData: PropTypes.func.isRequired,
+    data: PropTypes.array.isRequired,
+    selectable: PropTypes.bool,
+    selectedRows: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    handleSelect: PropTypes.func,
+    setColMap: PropTypes.func.isRequired,
+};
 
 const styles = (hasBorder = true) => {
     return {
@@ -123,7 +147,7 @@ const styles = (hasBorder = true) => {
             display: 'flex',
             flexDirection: 'row',
             backgroundColor: '#f3f3f3',
-            borderBottom: '1px solid #e3e3e3'
+            borderBottom: '1px solid #e3e3e3',
         },
         headerColumn: {
             display: 'flex',
@@ -148,11 +172,12 @@ const styles = (hasBorder = true) => {
         iconUp: {
             position: 'absolute',
             top: '-2px',
-            
         },
         iconDown: {
             position: 'absolute',
             bottom: '-5px',
-        }
-    }
-}
+        },
+    };
+};
+
+export default GridHeader;

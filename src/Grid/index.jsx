@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { cloneElement } from 'react';
 import { GridHeader } from './grid-header';
 import { GridContent } from './grid-content-v2';
@@ -20,6 +20,7 @@ const Grid = ({
 }) => {
     let [selectedRows, setSelectedRows] = useState([]);
     let [currentPage, setCurrentPage] = useState(1);
+    let [colMap, setColMap] = useState(columnMapping);
 
     const handleSelect = (row) => {
         if (selectedRows === 'all') {
@@ -58,7 +59,8 @@ const Grid = ({
                 key: index,
                 ...childProps, 
                 // DATA PROPS
-                columnMapping,
+                columnMapping: colMap,
+                setColMap,
                 customComponents,
                 data: data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
                 selectable,
