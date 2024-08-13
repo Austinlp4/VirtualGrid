@@ -15,7 +15,7 @@ export const GridHeader = ({
 }) => {
     const [draggedColumn, setDraggedColumn] = useState(null);
 
-    const handleDragStart = (index) => {
+    const handleDragStart = (e, index) => {
         setDraggedColumn(index);
     };
 
@@ -50,8 +50,8 @@ export const GridHeader = ({
                     sortable={sortable}
                     setData={setData}
                     data={data}
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={() => handleDragOver(index)}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(index)}
                     onDrop={handleDrop}
                 />
             ))}
@@ -96,9 +96,13 @@ const HeaderColumn = ({
         <div
             key={column.index}
             style={{
-                width: column.width,
+                minWidth: column.width,
+                maxWidth: column.width,
                 ...styles(true).headerColumn,
-                cursor: 'move'
+                cursor: 'move',
+                position: column.sticky ? 'sticky' : 'relative',
+                left: column.sticky ? '0' : 'auto',
+                zIndex: column.sticky ? 1 : 'auto',
             }}
             draggable
             onDragStart={onDragStart}
@@ -120,6 +124,7 @@ const HeaderColumn = ({
                     <ArrowDropDown fontSize="small" column={column} sortable={sortable} style={styles().iconDown} />
                 </div>
             )}
+            <span className="resizable-handle" style={styles().resizeHandle} />
         </div>
     );
 };
@@ -146,16 +151,19 @@ const styles = (hasBorder = true) => {
             padding: '.25rem 1rem',
             display: 'flex',
             flexDirection: 'row',
-            backgroundColor: '#f3f3f3',
-            borderBottom: '1px solid #e3e3e3',
+            backgroundColor: 'white',
+            height: '50px',
         },
         headerColumn: {
             display: 'flex',
             alignItems: 'center',
             gap: '.25rem',
-            borderRight: hasBorder ? '1px solid #e3e3e3' : 'none',
-            borderLeft: hasBorder ? '1px solid #e3e3e3' : 'none',
+            // borderRight: hasBorder ? '1px solid #e3e3e3' : 'none',
+            // borderLeft: hasBorder ? '1px solid #e3e3e3' : 'none',
             padding: '0 .5rem',
+            borderBottom: '1px solid #e3e3e3',
+            borderTop: '1px solid #e3e3e3',
+            backgroundColor: 'white',
         },
         columnLabel: {
             marginRight: '12px',
@@ -177,6 +185,15 @@ const styles = (hasBorder = true) => {
             position: 'absolute',
             bottom: '-5px',
         },
+        resizeHandle: {
+            position: 'absolute',
+            right: 0,
+            top: 5,
+            bottom: 5,
+            width: '3px',
+            cursor: 'col-resize',
+            backgroundColor: '#e3e3e3'
+        }
     };
 };
 
