@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Grid from "./Grid"
 import { columnMapping, sortableMapping } from "./gridConfig"
 import products from '../products.json';
+import './App.css'
 
 function App() {
   let [data, setData] = useState([])

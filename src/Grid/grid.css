@@ -1,7 +1,8 @@
 * {
     font-size: 16px;
-    font-family: Roboto, sans-serif;
+    font-family: Montserrat, sans-serif;
     box-sizing: border-box;
+    --webkit-font-smoothing: antialiased;
 }
 
 .grid {
@@ -26,7 +27,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: .25rem 1rem;
+    padding: .25rem .25rem;
+    margin: 0 .75rem;
 }
 
 .grid-cell {
@@ -55,13 +57,10 @@
 }
 
 .pagination button.active {
-    background: #3d3d3e;
-    color: #fff;
-    border-radius: 4px;
+    border-bottom: 2px solid #3d3d3e;
 }
 
 .pagination button:disabled {
-    background: #f5f5f5;
     cursor: not-allowed;
 }
 

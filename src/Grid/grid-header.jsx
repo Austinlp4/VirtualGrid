@@ -41,7 +41,7 @@ export const GridHeader = ({
     return (
         <div className="grid-header" style={styles().headerRow}>
             {selectable && (
-                <div style={{ width: '50px', padding: '0 .25rem', ...styles(false).headerColumn }}>
+                <div style={{ width: '50px', padding: '0 .25rem', ...styles(false).headerCheckbox }}>
                     <Checkbox
                         onChange={() => handleSelect('all')}
                         checked={selectedRows === 'all'}
@@ -216,12 +216,23 @@ const styles = (hasBorder = true) => {
             borderBottom: '1px solid #e3e3e3',
             borderTop: '1px solid #e3e3e3',
             backgroundColor: 'white',
+            paddingLeft: '30px'
+        },
+        headerCheckbox: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '.25rem',
+            padding: '0 .5rem',
+            borderBottom: '1px solid #e3e3e3',
+            borderTop: '1px solid #e3e3e3',
+            backgroundColor: 'white',
         },
         columnLabel: {
             marginRight: '12px',
             whiteSpace: 'nowrap', // Prevents text wrapping
-            overflow: 'hidden',   // Hides overflow
-            textOverflow: 'ellipsis', // Adds ellipsis when text is too long
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            fontWeight: '500'
         },
         iconGroup: {
             display: 'flex',
@@ -242,12 +253,13 @@ const styles = (hasBorder = true) => {
         },
         resizeHandle: {
             position: 'absolute',
-            right: 0,
-            top: 5,
-            bottom: 5,
-            width: '3px',
-            cursor: 'col-resize',
-            backgroundColor: '#e3e3e3'
+            right: '-4px',
+            top: 10,
+            bottom: 10,
+            width: '8px',
+            cursor: 'ew-resize',
+            // backgroundColor: '#e3e3e3'
+            borderLeft: '2px solid #e3e3e3',
         }
     };
 };

@@ -17,7 +17,7 @@ export const GridRow = ({
         backgroundColor: row % 2 === 0 ? '#f9f9f9' : 'white'
       }}>
         {selectable && (
-          <div style={{ width: "50px", paddingLeft: ".5rem" }}>
+          <div style={{ width: "50px", padding: '0 .5rem' }}>
             <Checkbox 
               onChange={() => handleSelect(row)}
               checked={selectedRows === 'all' || selectedRows.includes(row)}
