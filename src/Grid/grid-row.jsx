@@ -2,7 +2,6 @@ import Checkbox from '@mui/material/Checkbox';
 import { GridCell } from './grid-cell';
 
 export const GridRow = ({ 
-  newProp, 
   row, 
   columnMapping, 
   customCell, 
@@ -40,7 +39,6 @@ export const GridRow = ({
           return (
             <MergedCellComponent 
               key={index}
-              newProp={newProp}
             />
           )
         })}

@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react'
 import Grid from "./Grid"
-import { tableData } from "./tableData"
-import { columnMapping } from "./gridConfig"
-import {
-  NewGridRow
-} from "./custom-components"
+import { columnMapping, sortableMapping } from "./gridConfig"
 import products from '../products.json';
 
 function App() {
@@ -22,50 +18,18 @@ function App() {
     }))
 
     setPropertySchema(schema)
-    console.log('products', products, 'schema', schema);
   }, []);
 
   return (
-    <div style={
-      {
-        maxWidth: "90%",
-        margin: "20px auto",
-        height: "600px",
-      }
-    }>
+    <div style={{ maxWidth: "90%", margin: "20px auto", height: "600px" }}>
       <Grid 
         columnMapping={propertySchema}
         setData={setData}
         data={data}
         selectable
-        customComponents={{
-          'grid-row': {
-            component: NewGridRow,
-            props: {
-              newProp: 'Hello',
-            }
-          }
-        }}
       >
         <Grid.Header 
-          sortable={{
-              masterUniqueId: {
-                key: 'masterUniqueId',
-                sortFn: (a, b) => a.localeCompare(b)
-              },
-              base: {
-                key: 'base',
-                sortFn: (a, b) => a.localeCompare(b)
-              },
-              'product_name': {
-                key: 'product_name',
-                sortFn: (a, b) => a.localeCompare(b)
-              },
-              version: {
-                key: 'version',
-                sortFn: (a, b) => a.localeCompare(b)
-              },
-          }}
+          sortable={sortableMapping}
         />
         <Grid.Content rowHeight={80}/>
       </Grid>
@@ -74,3 +38,16 @@ function App() {
 }
 
 export default App
+
+
+// Grid Props
+
+// customComponents
+// {{
+//   'grid-row': {
+//     component: () => {}, // We can define
+//     props: {
+//       // we can add additional props to the custom grid component here [propName]: propValue
+//     }
+//   }
+// }}

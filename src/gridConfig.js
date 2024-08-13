@@ -26,3 +26,22 @@ export const columnMapping = [
     },
     
 ];
+
+export const sortableMapping = {
+  masterUniqueId: {
+    key: 'masterUniqueId',
+    sortFn: (a, b) => a.localeCompare(b)
+  },
+  base: {
+    key: 'base',
+    sortFn: (a, b) => a.localeCompare(b)
+  },
+  'product_name': {
+    key: 'product_name',
+    sortFn: (a, b) => a.localeCompare(b)
+  },
+  version: {
+    key: 'version',
+    sortFn: (a, b) => a.localeCompare(b)
+  },
+};

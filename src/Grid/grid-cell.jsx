@@ -1,4 +1,4 @@
-export const GridCell = ({ newProp, cell, column, columnMapping }) => {
+export const GridCell = ({ cell, column, columnMapping }) => {
     return (
       <div className="grid-cell" style={{
         padding: '0 .5rem',

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from '@mui/material/Checkbox';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
@@ -14,13 +14,18 @@ export const GridHeader = ({
     setColMap,
 }) => {
     const [draggedColumn, setDraggedColumn] = useState(null);
+    const isResizing = useRef(false); // Flag to track if resizing is in progress
 
     const handleDragStart = (e, index) => {
+        if (isResizing.current) {
+            e.preventDefault();
+            return;
+        }
         setDraggedColumn(index);
     };
 
     const handleDragOver = (index) => {
-        if (draggedColumn === index) return;
+        if (isResizing.current || draggedColumn === index) return;
         const newColMap = [...columnMapping];
         const [draggedCol] = newColMap.splice(draggedColumn, 1);
         newColMap.splice(index, 0, draggedCol);
@@ -29,6 +34,7 @@ export const GridHeader = ({
     };
 
     const handleDrop = () => {
+        if (isResizing.current) return;
         setDraggedColumn(null);
     };
 
@@ -50,6 +56,9 @@ export const GridHeader = ({
                     sortable={sortable}
                     setData={setData}
                     data={data}
+                    setColMap={setColMap}
+                    columnMapping={columnMapping}
+                    isResizing={isResizing}
                     onDragStart={(e) => handleDragStart(e, index)}
                     onDragOver={(e) => handleDragOver(index)}
                     onDrop={handleDrop}
@@ -65,11 +74,25 @@ const HeaderColumn = ({
     index,
     setData,
     data,
+    setColMap,
+    columnMapping,
+    isResizing,
     onDragStart,
     onDragOver,
     onDrop,
 }) => {
     const lastSort = useRef(null);
+    const columnRef = useRef(null);
+    const [draggable, setDraggable] = useState(true);
+
+    useEffect(() => {
+        // Update draggable state based on resizing
+        if (isResizing.current) {
+            setDraggable(false);
+        } else {
+            setDraggable(true);
+        }
+    }, [isResizing.current]);
 
     const handleSort = (key, sortFn) => {
         if (!sortFn) {
@@ -92,19 +115,45 @@ const HeaderColumn = ({
         setData(newData);
     };
 
+    const handleResizeStart = (e) => {
+        e.stopPropagation();
+        isResizing.current = true;
+        const startX = e.clientX;
+        const startWidth = columnRef.current.offsetWidth;
+
+        const handleMouseMove = (e) => {
+            const newWidth = startWidth + e.clientX - startX;
+            const newColMap = [...columnMapping];
+            newColMap[index].width = `${newWidth}px`;
+            setColMap(newColMap);
+        };
+
+        const handleMouseUp = () => {
+            isResizing.current = false;
+            setDraggable(true); // Re-enable dragging
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        setDraggable(false); // Disable dragging during resize
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
     return (
         <div
+            ref={columnRef}
             key={column.index}
             style={{
                 minWidth: column.width,
                 maxWidth: column.width,
                 ...styles(true).headerColumn,
-                cursor: 'move',
+                cursor: draggable ? 'move' : 'default',
                 position: column.sticky ? 'sticky' : 'relative',
                 left: column.sticky ? '0' : 'auto',
                 zIndex: column.sticky ? 1 : 'auto',
             }}
-            draggable
+            draggable={draggable}
             onDragStart={onDragStart}
             onDragOver={(e) => {
                 e.preventDefault();
@@ -112,7 +161,7 @@ const HeaderColumn = ({
             }}
             onDrop={onDrop}
         >
-            {column.label}
+            <div style={styles().columnLabel}>{column.label}</div>
             {sortable && sortable[column.key] && (
                 <div
                     style={styles().iconGroup}
@@ -124,9 +173,14 @@ const HeaderColumn = ({
                     <ArrowDropDown fontSize="small" column={column} sortable={sortable} style={styles().iconDown} />
                 </div>
             )}
-            <span className="resizable-handle" style={styles().resizeHandle} />
+            <span
+                className="resizable-handle"
+                style={styles().resizeHandle}
+                onMouseDown={handleResizeStart}
+            />
         </div>
     );
+    
 };
 
 GridHeader.propTypes = {
@@ -158,8 +212,6 @@ const styles = (hasBorder = true) => {
             display: 'flex',
             alignItems: 'center',
             gap: '.25rem',
-            // borderRight: hasBorder ? '1px solid #e3e3e3' : 'none',
-            // borderLeft: hasBorder ? '1px solid #e3e3e3' : 'none',
             padding: '0 .5rem',
             borderBottom: '1px solid #e3e3e3',
             borderTop: '1px solid #e3e3e3',
@@ -167,6 +219,9 @@ const styles = (hasBorder = true) => {
         },
         columnLabel: {
             marginRight: '12px',
+            whiteSpace: 'nowrap', // Prevents text wrapping
+            overflow: 'hidden',   // Hides overflow
+            textOverflow: 'ellipsis', // Adds ellipsis when text is too long
         },
         iconGroup: {
             display: 'flex',
@@ -196,5 +251,6 @@ const styles = (hasBorder = true) => {
         }
     };
 };
+
 
 export default GridHeader;
