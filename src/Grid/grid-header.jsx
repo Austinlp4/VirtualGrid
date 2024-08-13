@@ -86,7 +86,6 @@ const HeaderColumn = ({
     const [draggable, setDraggable] = useState(true);
 
     useEffect(() => {
-        // Update draggable state based on resizing
         if (isResizing.current) {
             setDraggable(false);
         } else {
@@ -191,12 +190,12 @@ GridHeader.propTypes = {
             sortFn: PropTypes.func,
         }),
     }),
-    setData: PropTypes.func.isRequired,
-    data: PropTypes.array.isRequired,
+    setData: PropTypes.func,
+    data: PropTypes.array,
     selectable: PropTypes.bool,
     selectedRows: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     handleSelect: PropTypes.func,
-    setColMap: PropTypes.func.isRequired,
+    setColMap: PropTypes.func,
 };
 
 const styles = (hasBorder = true) => {
@@ -207,6 +206,9 @@ const styles = (hasBorder = true) => {
             flexDirection: 'row',
             backgroundColor: 'white',
             height: '50px',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
         },
         headerColumn: {
             display: 'flex',
@@ -226,6 +228,10 @@ const styles = (hasBorder = true) => {
             borderBottom: '1px solid #e3e3e3',
             borderTop: '1px solid #e3e3e3',
             backgroundColor: 'white',
+            // active checkbox should be black and white
+            '&:active': {
+                backgroundColor: 'black',
+            }
         },
         columnLabel: {
             marginRight: '12px',
@@ -245,11 +251,11 @@ const styles = (hasBorder = true) => {
         },
         iconUp: {
             position: 'absolute',
-            top: '-2px',
+            top: '-1px',
         },
         iconDown: {
             position: 'absolute',
-            bottom: '-5px',
+            bottom: '-3px',
         },
         resizeHandle: {
             position: 'absolute',

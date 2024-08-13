@@ -12,21 +12,17 @@ export const GridContent = ({
     rowHeight
 }) => {
     const containerRef = useRef(null);
-    const [containerHeight, setContainerHeight] = useState(500); // Default height
+    const [containerHeight, setContainerHeight] = useState(500);
 
     useEffect(() => {
         const updateHeight = () => {
             if (containerRef.current) {
-                console.log('Container height: ', containerRef.current.clientHeight);
-                // get parent of container
                 const parent = containerRef.current.parentElement.parentElement;
-                console.log('Parent height: ', parent.offsetHeight);
-
-                setContainerHeight(parent.clientHeight - 50); // Subtract header height
+                setContainerHeight(parent.clientHeight - 50);
             }
         };
 
-        updateHeight(); // Set initial height
+        updateHeight();
         window.addEventListener('resize', updateHeight);
 
         return () => {
@@ -60,7 +56,7 @@ export const GridContent = ({
                 itemCount={data.length}
                 itemSize={rowHeight}
                 width="100%"
-                style={{ overflow: 'none' }}
+                style={{ overflowX: 'none' }}
             >
                 {renderRow}
             </List>

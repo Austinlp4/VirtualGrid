@@ -3,7 +3,7 @@ export const columnMapping = [
       key: "masterUniqueId", 
       label: "Product Identifier",
       width: "150px",
-      sortFn: (a, b) => a.localeCompare(b),
+      sortFn: sortString,
       sticky: false
     },
     {
@@ -30,18 +30,26 @@ export const columnMapping = [
 export const sortableMapping = {
   masterUniqueId: {
     key: 'masterUniqueId',
-    sortFn: (a, b) => a.localeCompare(b)
+    sortFn: sortString
   },
   base: {
     key: 'base',
-    sortFn: (a, b) => a.localeCompare(b)
+    sortFn: sortString
   },
   'product_name': {
     key: 'product_name',
-    sortFn: (a, b) => a.localeCompare(b)
+    sortFn: sortString
   },
   version: {
     key: 'version',
-    sortFn: (a, b) => a.localeCompare(b)
+    sortFn: sortString
   },
 };
+
+function sortString(a, b) {
+  if(typeof a === 'string' && typeof b === 'string') {
+    return a.localeCompare(b);
+  }
+
+  return String(a).localeCompare(String(b));
+}

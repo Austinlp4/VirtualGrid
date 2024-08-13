@@ -28,6 +28,7 @@ function App() {
         setData={setData}
         data={data}
         selectable
+        itemsPerPage={50}
       >
         <Grid.Header 
           sortable={sortableMapping}
