@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from '@mui/material/Checkbox';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
@@ -14,7 +14,7 @@ export const GridHeader = ({
     setColMap,
 }) => {
     const [draggedColumn, setDraggedColumn] = useState(null);
-    const isResizing = useRef(false); // Flag to track if resizing is in progress
+    const isResizing = useRef(false);
 
     const handleDragStart = (e, index) => {
         if (isResizing.current) {
@@ -39,9 +39,9 @@ export const GridHeader = ({
     };
 
     return (
-        <div className="grid-header" style={styles().headerRow}>
+        <div className="sticky grid-header" style={styles().headerRow}>
             {selectable && (
-                <div style={{ width: '50px', padding: '0 .25rem', ...styles(false).headerCheckbox }}>
+                <div className="checkbox-cell" style={{ width: '50px', ...styles().headerCheckbox }}>
                     <Checkbox
                         onChange={() => handleSelect('all')}
                         checked={selectedRows === 'all'}
@@ -129,12 +129,12 @@ const HeaderColumn = ({
 
         const handleMouseUp = () => {
             isResizing.current = false;
-            setDraggable(true); // Re-enable dragging
+            setDraggable(true);
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
 
-        setDraggable(false); // Disable dragging during resize
+        setDraggable(false);
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
     };
@@ -142,15 +142,17 @@ const HeaderColumn = ({
     return (
         <div
             ref={columnRef}
-            key={column.index}
             style={{
                 minWidth: column.width,
                 maxWidth: column.width,
-                ...styles(true).headerColumn,
+                ...styles().headerColumn,
                 cursor: draggable ? 'move' : 'default',
                 position: column.sticky ? 'sticky' : 'relative',
                 left: column.sticky ? '0' : 'auto',
                 zIndex: column.sticky ? 1 : 'auto',
+                height: '100%',
+                boxSizing: 'border-box',
+                padding: '0 8px',
             }}
             draggable={draggable}
             onDragStart={onDragStart}
@@ -164,12 +166,10 @@ const HeaderColumn = ({
             {sortable && sortable[column.key] && (
                 <div
                     style={styles().iconGroup}
-                    onClick={() =>
-                        handleSort(column.key, sortable[column.key]?.sortFn)
-                    }
+                    onClick={() => handleSort(column.key, sortable[column.key]?.sortFn)}
                 >
-                    <ArrowDropUp fontSize="small" column={column} sortable={sortable} style={styles().iconUp} />
-                    <ArrowDropDown fontSize="small" column={column} sortable={sortable} style={styles().iconDown} />
+                    <ArrowDropUp fontSize="small" style={styles().iconUp} />
+                    <ArrowDropDown fontSize="small" style={styles().iconDown} />
                 </div>
             )}
             <span
@@ -179,7 +179,6 @@ const HeaderColumn = ({
             />
         </div>
     );
-    
 };
 
 GridHeader.propTypes = {
@@ -198,77 +197,75 @@ GridHeader.propTypes = {
     setColMap: PropTypes.func,
 };
 
-const styles = (hasBorder = true) => {
-    return {
-        headerRow: {
-            padding: '.25rem 1rem',
-            display: 'flex',
-            flexDirection: 'row',
-            backgroundColor: 'white',
-            height: '50px',
-            position: 'sticky',
-            top: 0,
-            zIndex: 1,
-        },
-        headerColumn: {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '.25rem',
-            padding: '0 .5rem',
-            borderBottom: '1px solid #e3e3e3',
-            borderTop: '1px solid #e3e3e3',
-            backgroundColor: 'white',
-            paddingLeft: '30px'
-        },
-        headerCheckbox: {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '.25rem',
-            padding: '0 .5rem',
-            borderBottom: '1px solid #e3e3e3',
-            borderTop: '1px solid #e3e3e3',
-            backgroundColor: 'white',
-            // active checkbox should be black and white
-            '&:active': {
-                backgroundColor: 'black',
-            }
-        },
-        columnLabel: {
-            marginRight: '12px',
-            whiteSpace: 'nowrap', // Prevents text wrapping
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            fontWeight: '500'
-        },
-        iconGroup: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            position: 'relative',
-            height: '20px',
-            width: '20px',
-            cursor: 'pointer',
-        },
-        iconUp: {
-            position: 'absolute',
-            top: '-1px',
-        },
-        iconDown: {
-            position: 'absolute',
-            bottom: '-3px',
-        },
-        resizeHandle: {
-            position: 'absolute',
-            right: '-4px',
-            top: 10,
-            bottom: 10,
-            width: '8px',
-            cursor: 'ew-resize',
-            // backgroundColor: '#e3e3e3'
-            borderLeft: '2px solid #e3e3e3',
-        }
-    };
-};
-
+const styles = () => ({
+    headerRow: {
+        padding: '.25rem .5rem',
+        display: 'flex',
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        height: '50px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+        borderBottom: '1px solid #e3e3e3',
+    },
+    headerColumn: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '.25rem',
+        borderBottom: '1px solid #e3e3e3',
+        borderTop: '1px solid #e3e3e3',
+        backgroundColor: 'white',
+        height: '100%',
+        position: 'relative',
+        boxSizing: 'border-box',
+        padding: '0 .5rem'
+    },
+    headerCheckbox: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottom: '1px solid #e3e3e3',
+        borderTop: '1px solid #e3e3e3',
+        backgroundColor: 'white',
+        height: '100%',
+    },
+    columnLabel: {
+        marginRight: '12px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        fontWeight: '500',
+        paddingLeft: '.75rem'
+    },
+    iconGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        position: 'relative',
+        height: '20px',
+        width: '20px',
+        cursor: 'pointer',
+    },
+    iconUp: {
+        position: 'absolute',
+        top: '-1px',
+    },
+    iconDown: {
+        position: 'absolute',
+        bottom: '-3px',
+    },
+    resizeHandle: {
+        position: 'absolute',
+        right: 0,
+        top: 10,
+        bottom: 10,
+        width: '2px',
+        cursor: 'col-resize',
+        backgroundColor: '#999',
+        opacity: 1,
+        transition: 'none',
+    }
+});
 
 export default GridHeader;

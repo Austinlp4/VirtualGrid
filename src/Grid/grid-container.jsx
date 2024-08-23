@@ -1,6 +1,6 @@
 export const GridContainer = ({ children }) => {
     return (
-        <div className="grid">
+        <div className="grid" style={{ width: '100%' }}>
             {children}
         </div>
     );

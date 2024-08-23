@@ -14,10 +14,18 @@ export const GridRow = ({
     return (
       <div className="grid-row" style={{
         height: `${rowHeight}px`,
-        backgroundColor: row % 2 === 0 ? '#f9f9f9' : 'white'
+        backgroundColor: row % 2 === 0 ? '#f9f9f9' : 'white',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        boxSizing: 'border-box',
       }}>
         {selectable && (
-          <div style={{ width: "50px", padding: '0 .5rem' }}>
+          <div style={{ 
+            width: "50px", 
+            padding: '0 .5rem',
+            boxSizing: 'border-box'
+          }}>
             <Checkbox 
               onChange={() => handleSelect(row)}
               checked={selectedRows === 'all' || selectedRows.includes(row)}
