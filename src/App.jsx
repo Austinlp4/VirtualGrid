@@ -44,8 +44,8 @@ function App() {
   }, []);
 
   return (
-    <div style={{ maxWidth: "90%", margin: "20px auto", height: "600px", overflow: "hidden" }}>
-      <div ref={containerRef} style={{ height: '100%', overflow: 'auto' }}>
+    <div style={{ maxWidth: "90%", margin: "20px auto", display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
         <Grid 
           columnMapping={propertySchema}
           setData={setData}
