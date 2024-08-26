@@ -16,7 +16,7 @@ const Grid = ({
     setData,
     data,
     selectable,
-    itemsPerPage = 10
+    itemsPerPage = 20
 }) => {
     let [selectedRows, setSelectedRows] = useState([]);
     let [currentPage, setCurrentPage] = useState(1);

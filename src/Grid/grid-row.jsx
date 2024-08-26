@@ -9,17 +9,18 @@ export const GridRow = ({
   selectable,
   selectedRows,
   handleSelect,
-  rowHeight
+  rowHeight,
+  style
 }) => {
     return (
-      <div className="grid-row" style={{
+      <div className="grid-row" style={{...{
         height: `${rowHeight}px`,
         backgroundColor: row % 2 === 0 ? '#f9f9f9' : 'white',
         width: '100%',
         display: 'flex',
         alignItems: 'center',
         boxSizing: 'border-box',
-      }}>
+      }, ...style}}>
         {selectable && (
           <div style={{ 
             width: "50px", 

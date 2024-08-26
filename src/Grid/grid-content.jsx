@@ -43,7 +43,7 @@ export const GridContent = ({
         return (
             <Row 
                 {...rowProps}
-                style={style}
+                style={style} // Apply the style prop here
                 row={index - 1}
                 columnMapping={columnMapping} 
                 customCell={customComponents && customComponents['grid-cell'] || null}
