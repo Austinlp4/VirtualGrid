@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { GridRow } from './grid-row';
 import { GridHeader } from './grid-header';
 import { StickyList } from './sticky-list';
+import AutoSizer from 'react-virtualized-auto-sizer'; // Add this import
 
 export const GridContent = ({ 
     data, 
@@ -69,18 +70,22 @@ export const GridContent = ({
     );
 
     return (
-        <div ref={containerRef} style={{ height: '100%', overflowX: 'auto', width: '100%' }}>
-            <StickyList
-                height={containerHeight}
-                itemCount={data.length + 1}
-                itemSize={rowHeight}
-                width="100%"
-                stickyIndices={[0]}
-                StickyRow={StickyRow}
-                overscanCount={5}
-            >
-                {renderRow}
-            </StickyList>
+        <div ref={containerRef} style={{ height: '600px', width: '100%' }}>
+            <AutoSizer>
+                {({ width, height }) => (
+                    <StickyList
+                        height={height}
+                        itemCount={data.length + 1}
+                        itemSize={rowHeight}
+                        width={width}
+                        stickyIndices={[0]}
+                        StickyRow={StickyRow}
+                        overscanCount={5}
+                    >
+                        {renderRow}
+                    </StickyList>
+                )}
+            </AutoSizer>
         </div>
     );
 }
