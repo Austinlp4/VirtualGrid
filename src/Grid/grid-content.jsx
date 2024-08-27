@@ -70,7 +70,7 @@ export const GridContent = ({
     );
 
     return (
-        <div ref={containerRef} style={{ height: '600px', width: '100%' }}>
+        <div ref={containerRef} style={{ height: '600px', width: '100%', overflowX: 'auto' }}>
             <AutoSizer>
                 {({ width, height }) => (
                     <StickyList

@@ -1,7 +1,16 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from '@mui/material/Checkbox';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+
+// Custom debounce function
+const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func(...args), delay);
+    };
+};
 
 export const GridHeader = ({
     columnMapping,
@@ -14,6 +23,7 @@ export const GridHeader = ({
     setColMap,
 }) => {
     const [draggedColumn, setDraggedColumn] = useState(null);
+    const [dropTarget, setDropTarget] = useState(null);
     const isResizing = useRef(false);
 
     const handleDragStart = (e, index) => {
@@ -22,20 +32,31 @@ export const GridHeader = ({
             return;
         }
         setDraggedColumn(index);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index);
     };
 
-    const handleDragOver = (index) => {
-        if (isResizing.current || draggedColumn === index) return;
-        const newColMap = [...columnMapping];
-        const [draggedCol] = newColMap.splice(draggedColumn, 1);
-        newColMap.splice(index, 0, draggedCol);
-        setColMap(newColMap);
-        setDraggedColumn(index);
-    };
+    const handleDragOver = useCallback(
+        debounce((index) => {
+            if (isResizing.current || draggedColumn === index) return;
+            setDropTarget(index);
+            
+            // Update column order during drag
+            if (draggedColumn !== null && index !== null && draggedColumn !== index) {
+                const newColMap = [...columnMapping];
+                const [draggedCol] = newColMap.splice(draggedColumn, 1);
+                newColMap.splice(index, 0, draggedCol);
+                setColMap(newColMap);
+                setDraggedColumn(index);
+            }
+        }, 50),
+        [draggedColumn, isResizing, columnMapping, setColMap]
+    );
 
-    const handleDrop = () => {
+    const handleDragEnd = () => {
         if (isResizing.current) return;
         setDraggedColumn(null);
+        setDropTarget(null);
     };
 
     return (
@@ -60,8 +81,10 @@ export const GridHeader = ({
                     columnMapping={columnMapping}
                     isResizing={isResizing}
                     onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={(e) => handleDragOver(index)}
-                    onDrop={handleDrop}
+                    onDragOver={() => handleDragOver(index)}
+                    onDragEnd={handleDragEnd}
+                    isDragging={draggedColumn === index}
+                    isDropTarget={dropTarget === index}
                 />
             ))}
         </div>
@@ -79,7 +102,9 @@ const HeaderColumn = ({
     isResizing,
     onDragStart,
     onDragOver,
-    onDrop,
+    onDragEnd,
+    isDragging,
+    isDropTarget,
 }) => {
     const lastSort = useRef(null);
     const columnRef = useRef(null);
@@ -153,6 +178,9 @@ const HeaderColumn = ({
                 height: '100%',
                 boxSizing: 'border-box',
                 padding: '0 8px',
+                opacity: isDragging ? 0.5 : 1,
+                transform: isDropTarget ? 'scale(1.05)' : 'scale(1)',
+                transition: 'opacity 0.2s, transform 0.2s',
             }}
             draggable={draggable}
             onDragStart={onDragStart}
@@ -160,7 +188,7 @@ const HeaderColumn = ({
                 e.preventDefault();
                 onDragOver();
             }}
-            onDrop={onDrop}
+            onDragEnd={onDragEnd}
         >
             <div style={styles().columnLabel}>{column.label}</div>
             {sortable && sortable[column.key] && (
